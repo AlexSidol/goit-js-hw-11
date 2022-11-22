@@ -12,7 +12,10 @@ const loadMoreBtnEl = document.querySelector('.load-more');
 
 const pixabayApi = new PixabayApi();
 
-var lightbox = new SimpleLightbox('.gallery a');
+let simpleLightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
 let totalPages = null;
 
@@ -33,6 +36,7 @@ const onSearchFormSubmit = async event => {
     }
 
     galleryEl.innerHTML = createGalleryCards(data.hits);
+    simpleLightbox.refresh();
     Notiflix.Notify.success(`Hooray! We found ${data.total} images.`);
     loadMoreBtnEl.classList.remove('is-hidden');
 
@@ -47,34 +51,6 @@ const onSearchFormSubmit = async event => {
     console.log(err);
   }
 };
-
-// pixabayApi
-//   .fetchPhotos()
-//   .then(response => {
-//     //   console.log(response);
-//     const { data } = response;
-
-//     if (data.total === 0) {
-//       return Notiflix.Notify.failure(
-//         'Sorry, there are no images matching your search query. Please try again.'
-//       );
-//     }
-
-//     galleryEl.innerHTML = createGalleryCards(data.hits);
-//     Notiflix.Notify.success(`Hooray! We found ${data.total} images.`);
-//     loadMoreBtnEl.classList.remove('is-hidden');
-
-//     totalPages = Math.round(data.total / data.hits.length);
-//     if (pixabayApi.page === totalPages) {
-//       loadMoreBtnEl.classList.add('is-hidden');
-//       return Notiflix.Notify.failure(
-//         "We're sorry, but you've reached the end of search results."
-//       );
-//     }
-//   })
-//   .catch(err => {
-//     console.log(err);
-//   });
 
 function createGalleryCards(galleryItems) {
   return galleryItems
@@ -92,7 +68,7 @@ function createGalleryCards(galleryItems) {
         
 <div class="photo-card">
 <a href="${largeImageURL}">
-  <img class="photo" src="${webformatURL}" alt="${tags}" loading="lazy" width='340px'/></a>
+  <img class="photo" src="${webformatURL}" alt="${tags}" loading="lazy"/></a>
   <div class="info">
     <p class="info-item">
       <b>Likes:</b> ${likes}
@@ -123,6 +99,17 @@ const onLoadMoreBtnClick = async event => {
     const { data } = response;
 
     galleryEl.insertAdjacentHTML('beforeend', createGalleryCards(data.hits));
+    simpleLightbox.refresh();
+
+    const { height: cardHeight } = document
+      .querySelector('.gallery')
+      .firstElementChild.getBoundingClientRect();
+    console.log(cardHeight);
+
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
     totalPages = Math.round(data.total / data.hits.length);
 
     if (pixabayApi.page === totalPages) {
@@ -135,24 +122,6 @@ const onLoadMoreBtnClick = async event => {
     console.log(err);
   }
 };
-// pixabayApi
-//   .fetchPhotos()
-//   .then(response => {
-//     const { data } = response;
-
-//     galleryEl.insertAdjacentHTML('beforeend', createGalleryCards(data.hits));
-//     totalPages = Math.round(data.total / data.hits.length);
-
-//     if (pixabayApi.page === totalPages) {
-//       loadMoreBtnEl.classList.add('is-hidden');
-//       return Notiflix.Notify.failure(
-//         "We're sorry, but you've reached the end of search results."
-//       );
-//     }
-//   })
-//   .catch(err => {
-//     console.log(err);
-//   });
 
 searchFormEl.addEventListener('submit', onSearchFormSubmit);
 loadMoreBtnEl.addEventListener('click', onLoadMoreBtnClick);
