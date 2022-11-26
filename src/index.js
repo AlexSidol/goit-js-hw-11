@@ -40,7 +40,7 @@ const onSearchFormSubmit = async event => {
     Notiflix.Notify.success(`Hooray! We found ${data.total} images.`);
     loadMoreBtnEl.classList.remove('is-hidden');
 
-    totalPages = Math.round(data.total / data.hits.length);
+    totalPages = Math.ceil(data.total / data.hits.length);
     if (pixabayApi.page === totalPages) {
       loadMoreBtnEl.classList.add('is-hidden');
       return Notiflix.Notify.failure(
@@ -104,13 +104,11 @@ const onLoadMoreBtnClick = async event => {
     const { height: cardHeight } = document
       .querySelector('.gallery')
       .firstElementChild.getBoundingClientRect();
-    console.log(cardHeight);
 
     window.scrollBy({
       top: cardHeight * 2,
       behavior: 'smooth',
     });
-    totalPages = Math.round(data.total / data.hits.length);
 
     if (pixabayApi.page === totalPages) {
       loadMoreBtnEl.classList.add('is-hidden');
