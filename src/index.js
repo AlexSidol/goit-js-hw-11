@@ -25,30 +25,34 @@ const onSearchFormSubmit = async event => {
   pixabayApi.page = 1;
   pixabayApi.searchQuery = event.target.elements.searchQuery.value;
 
-  try {
-    const response = await pixabayApi.fetchPhotos();
-    const { data } = response;
+  // console.log(pixabayApi.searchQuery);
 
-    if (data.total === 0) {
-      return Notiflix.Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
-      );
+  if (pixabayApi.searchQuery.length !== 0) {
+    try {
+      const response = await pixabayApi.fetchPhotos();
+      const { data } = response;
+
+      if (data.total === 0) {
+        return Notiflix.Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.'
+        );
+      }
+
+      galleryEl.innerHTML = createGalleryCards(data.hits);
+      simpleLightbox.refresh();
+      Notiflix.Notify.success(`Hooray! We found ${data.total} images.`);
+      loadMoreBtnEl.classList.remove('is-hidden');
+
+      totalPages = Math.ceil(data.total / data.hits.length);
+      if (pixabayApi.page === totalPages) {
+        loadMoreBtnEl.classList.add('is-hidden');
+        return Notiflix.Notify.failure(
+          "We're sorry, but you've reached the end of search results."
+        );
+      }
+    } catch (err) {
+      console.log(err);
     }
-
-    galleryEl.innerHTML = createGalleryCards(data.hits);
-    simpleLightbox.refresh();
-    Notiflix.Notify.success(`Hooray! We found ${data.total} images.`);
-    loadMoreBtnEl.classList.remove('is-hidden');
-
-    totalPages = Math.ceil(data.total / data.hits.length);
-    if (pixabayApi.page === totalPages) {
-      loadMoreBtnEl.classList.add('is-hidden');
-      return Notiflix.Notify.failure(
-        "We're sorry, but you've reached the end of search results."
-      );
-    }
-  } catch (err) {
-    console.log(err);
   }
 };
 
