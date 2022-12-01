@@ -51,6 +51,7 @@ const onSearchFormSubmit = async event => {
         );
       }
     } catch (err) {
+      Notiflix.Notify.failure('Oops. An error has occurred!');
       console.log(err);
     }
   }
@@ -121,6 +122,7 @@ const onLoadMoreBtnClick = async event => {
       );
     }
   } catch (err) {
+    Notiflix.Notify.failure('Oops. An error has occurred!');
     console.log(err);
   }
 };
