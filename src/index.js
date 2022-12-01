@@ -103,6 +103,8 @@ const onLoadMoreBtnClick = async event => {
     const response = await pixabayApi.fetchPhotos();
     const { data } = response;
 
+    console.log(data);
+
     galleryEl.insertAdjacentHTML('beforeend', createGalleryCards(data.hits));
     simpleLightbox.refresh();
 
@@ -114,9 +116,11 @@ const onLoadMoreBtnClick = async event => {
       top: cardHeight * 2,
       behavior: 'smooth',
     });
+    const defaultAmount = data.totalHits / data.hits.length;
 
-    if (pixabayApi.page === totalPages) {
+    if (Math.floor(defaultAmount) === pixabayApi.page) {
       loadMoreBtnEl.classList.add('is-hidden');
+
       return Notiflix.Notify.failure(
         "We're sorry, but you've reached the end of search results."
       );
